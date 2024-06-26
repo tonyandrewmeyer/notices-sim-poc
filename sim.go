@@ -150,6 +150,10 @@ func (n *pebbleNoticer) processNotice(charm chan WorkloadEvent, notice *client.N
 	// tam: new notice type for change-update
 	case client.ChangeUpdateNotice:
 		// tam: special-case recover-check and perform-check
+		// more radical change: Pebble could add a distinct notice type for these
+		// two cases, and then we wouldn't need to look in the data field or
+		// do a query from Juju for the type, and the key could be the check
+		// name, which makes it really easy to get the check info.
 		switch {
 		case notice.LastData["kind"] == "recover-check":
 			eventType = RecoverCheckEvent

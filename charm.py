@@ -32,7 +32,6 @@ def main(event_type, notice_id, notice_type, notice_key):
             notice.occurrences,
             notice.last_data,
         )
-    # released ops doesn't know about the other types yet
     elif event_type == "change-updated":
         change = client.get_change(notice_key)
         logger.info(
