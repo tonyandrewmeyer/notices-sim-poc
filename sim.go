@@ -137,6 +137,7 @@ func (n *pebbleNoticer) run(charm chan WorkloadEvent) () {
 		}
 
 		for _, notice := range notices {
+			slog.Info("processing notice", "type", notice.Type, "key", notice.Key, "data", notice.LastData)
 			err := n.processNotice(charm, notice)
 			if err != nil {
 				slog.Error("failed to process notice", "err", err)
