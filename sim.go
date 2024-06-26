@@ -49,6 +49,7 @@ type WorkloadEvents interface {
 	AddWorkloadEvent(evt WorkloadEvent) string
 	RemoveWorkloadEvent(id string)
 	HasWorkloadEvent(noticeType client.NoticeType, noticeKey string) bool
+	Length() int
 }
 
 type workloadEvents struct {
@@ -80,6 +81,10 @@ func (c *workloadEvents) HasWorkloadEvent(noticeType client.NoticeType, noticeKe
 		}
 	}
 	return false
+}
+
+func (c *workloadEvents) Length() int {
+	return len(c.pending)
 }
 
 type pebbleNoticer struct {
@@ -185,7 +190,7 @@ func (n *pebbleNoticer) processNotice(charm chan WorkloadEvent, notice *client.N
 	defer n.workloadEvents.RemoveWorkloadEvent(eventID)
 
 	// tam: Send the event to the charm!
-	slog.Info("sending Juju event", "type", event.Type, "notice-type", event.NoticeType, "key", event.NoticeKey, "id", event.NoticeID)
+	slog.Info("sending Juju event", "queue-size", n.workloadEvents.Length(), "buffer-size", len(charm), "type", event.Type, "notice-type", event.NoticeType, "key", event.NoticeKey, "id", event.NoticeID)
 	charm <- event
 	return nil
 }
