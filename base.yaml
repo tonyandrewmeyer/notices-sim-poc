@@ -1,0 +1,19 @@
+summary: Example service that has an http check
+
+description: |
+  Add to Pebble and then start/stop an HTTP server on port 8080 to
+  trigger the check to fail/recover.
+
+services:
+  sleeper:
+    override: replace
+    summary: Snoozing
+    command: sleep 600
+    startup: enabled
+
+checks:
+  test:
+    override: replace
+    period: 2s
+    http:
+      url: http://localhost:8080/
