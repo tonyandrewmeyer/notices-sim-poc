@@ -20,6 +20,9 @@ def main(event_type, notice_id, notice_type, notice_key):
     handler = logging.FileHandler("./charm.log")
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    handler.setFormatter(formatter)
+
     client = ops.pebble.Client("/tmp/pebble/.pebble.socket")
     if event_type == "custom":
         assert notice_type == ops.pebble.NoticeType.CUSTOM.value
