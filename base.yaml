@@ -10,6 +10,11 @@ services:
     summary: Snoozing
     command: sleep 600
     startup: enabled
+  bad:
+    override: replace
+    summary: always fails
+    command: /bin/false
+    startup: enabled
 
 checks:
   test:
@@ -17,3 +22,4 @@ checks:
     period: 2s
     http:
       url: http://localhost:8080/
+
