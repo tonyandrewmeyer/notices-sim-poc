@@ -123,8 +123,8 @@ func (n *pebbleNoticer) run(charm chan WorkloadEvent) () {
 		errorDelay  = time.Second
 	)
 
-	slog.Info("pebbleNoticer starting")
-	defer slog.Info("pebbleNoticer stopped")
+	slog.Debug("pebbleNoticer starting")
+	defer slog.Debug("pebbleNoticer stopped")
 
 	var after time.Time
 	ctx := context.Background()
@@ -161,9 +161,9 @@ func (n *pebbleNoticer) processNotice(charm chan WorkloadEvent, notice *client.N
 		// do a query from Juju for the type, and the key could be the check
 		// name, which makes it really easy to get the check info.
 		switch {
-		case notice.LastData["kind"] == "recover-check":
+		case notice.LastData["kind"] == "recover-check": // Status in (Hold, Doing)
 			eventType = RecoverCheckEvent
-		case notice.LastData["kind"] == "perform-check":
+		case notice.LastData["kind"] == "perform-check": // Status in (Error, Abort)
 			eventType = PerformCheckEvent
 		default:
 			eventType = ChangeUpdatedEvent
@@ -191,7 +191,7 @@ func (n *pebbleNoticer) processNotice(charm chan WorkloadEvent, notice *client.N
 	defer n.workloadEvents.RemoveWorkloadEvent(eventID)
 
 	// tam: Send the event to the charm!
-	slog.Info("sending Juju event", "queue-size", n.workloadEvents.Length(), "buffer-size", len(charm), "type", event.Type, "notice-type", event.NoticeType, "key", event.NoticeKey, "id", event.NoticeID)
+//	slog.Info("sending Juju event", "queue-size", n.workloadEvents.Length(), "buffer-size", len(charm), "type", event.Type, "notice-type", event.NoticeType, "key", event.NoticeKey, "id", event.NoticeID)
 	charm <- event
 	return nil
 }
@@ -199,7 +199,7 @@ func (n *pebbleNoticer) processNotice(charm chan WorkloadEvent, notice *client.N
 func emitter(charm chan WorkloadEvent) {
 	for {
 		event := <-charm
-		slog.Info("processing event in charm", "event-type", event.Type, "notice-type", event.NoticeType, "notice-key", event.NoticeKey, "notice-id", event.NoticeID)
+//		slog.Info("processing event in charm", "event-type", event.Type, "notice-type", event.NoticeType, "notice-key", event.NoticeKey, "notice-id", event.NoticeID)
 		out, err := exec.Command(".venv/bin/python", "./charm.py", event.Type.String(), event.NoticeID, event.NoticeType, event.NoticeKey).CombinedOutput()
 		if err != nil {
 			slog.Error("could not execute charm", "err", err, "output", out)
